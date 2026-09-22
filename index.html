@@ -91,17 +91,22 @@
     margin: 0 auto;
     padding: 2.25rem 1.25rem 1.5rem;
   }
+  .brand { display: flex; align-items: center; gap: 1rem; }
+
+  /* Platzhalter-Wappen: Grün-Weiß, nimmt die Themafarben auf */
+  .wappen { width: 3.6rem; height: auto; flex: none; }
+  .wappen .feld  { fill: var(--on-pitch); stroke: var(--pitch); }
+  .wappen .gruen { fill: var(--pitch); }
+  .wappen .weiss { fill: var(--on-pitch); }
+  .wappen .linie { stroke: var(--pitch); fill: none; }
+
   .crest {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
     font-size: .72rem;
     font-weight: 700;
     letter-spacing: .18em;
     text-transform: uppercase;
     opacity: .85;
   }
-  .crest .ball { font-size: 1rem; letter-spacing: 0; }
   h1 {
     font-size: clamp(1.9rem, 6vw, 3rem);
     line-height: 1.05;
@@ -261,6 +266,29 @@
   }
   .player.is-me { box-shadow: inset 0 0 0 1.5px var(--pitch-2); }
 
+  /* ---------- Verein ---------- */
+  .about { max-width: 42rem; }
+  .about p + p { margin-top: .6rem; }
+
+  .facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .45rem 1.1rem;
+    margin-top: 1.1rem;
+    font-size: .92rem;
+  }
+  .facts dt { font-weight: 600; color: var(--muted); }
+  .facts dd { min-width: 0; }
+
+  .locked {
+    font-size: .88rem;
+    color: var(--muted);
+    background: var(--chip);
+    border-radius: 10px;
+    padding: .6rem .8rem;
+    margin-top: .9rem;
+  }
+
   /* ---------- Kalender ---------- */
   .cal-head {
     display: flex;
@@ -396,6 +424,8 @@
     color: var(--muted);
   }
   td.amount, th.amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.amount b { font-weight: 600; }
+  td.amount .eur { display: block; font-size: .78rem; font-weight: 400; color: var(--muted); }
   td.act, th.act { width: 2.2rem; text-align: right; padding-right: 0; }
   tr:last-child td { border-bottom: 0; }
   .pen-form { margin-top: .9rem; }
@@ -413,6 +443,7 @@
     .field { flex-basis: 100%; }
     .form button { width: 100%; }
     .day { height: 2.7rem; font-size: .8rem; }
+    .wappen { width: 2.9rem; }
   }
 </style>
 </head>
@@ -420,14 +451,34 @@
 
 <header class="top">
   <div class="top-inner">
-    <div class="crest"><span class="ball">⚽</span> Hobbyliga · gegründet aus Spaß</div>
-    <h1>SV Gustlmännchen</h1>
-    <p class="claim">Trainingstermine eintragen, abstimmen, kicken — und Strafen zahlen.</p>
+    <div class="brand">
+      <!-- Platzhalter-Wappen. Gegen das echte tauschen: dieses <svg> durch
+           <img src="wappen.png" alt="Wappen SV Gustlmännchen" class="wappen"> ersetzen. -->
+      <svg class="wappen" viewBox="0 0 64 74" role="img" aria-label="Vereinswappen (Platzhalter)">
+        <path class="feld" d="M32 2.5 59 9.5V38c0 16.5-12.5 27.5-27 33.5C17.5 65.5 5 54.5 5 38V9.5Z"
+              stroke-width="3" stroke-linejoin="round"/>
+        <path class="gruen" d="M32 6 55.5 12v13.5h-47V12Z"/>
+        <text class="weiss" x="32" y="22.5" text-anchor="middle"
+              font-size="12.5" font-weight="700" font-family="var(--sans)" letter-spacing=".5">SVG</text>
+        <circle class="feld" cx="32" cy="46" r="13" stroke-width="2.5"/>
+        <path class="gruen" d="m32 39 5.7 4.2-2.2 6.7h-7L26.3 43.2Z"/>
+        <g class="linie" stroke-width="2.2" stroke-linecap="round">
+          <path d="M32 39v-5.8"/><path d="m37.7 43.2 5.4-1.9"/><path d="m35.5 49.9 3.4 4.7"/>
+          <path d="m28.5 49.9-3.4 4.7"/><path d="m26.3 43.2-5.4-1.9"/>
+        </g>
+      </svg>
+      <div>
+        <div class="crest">Hobbyliga · Grün-Weiß</div>
+        <h1>SV Gustlmännchen</h1>
+        <p class="claim">Trainingstermine eintragen, abstimmen, kicken — und Strafen zahlen.</p>
+      </div>
+    </div>
     <nav>
       <a href="#anmeldung">Anmeldung</a>
-      <a href="#kalender">Kalender</a>
-      <a href="#termine">Abstimmung</a>
-      <a href="#strafkatalog">Strafkatalog</a>
+      <a href="#verein">Verein</a>
+      <a href="#kalender" class="nav-intern" hidden>Kalender</a>
+      <a href="#termine" class="nav-intern" hidden>Abstimmung</a>
+      <a href="#strafkatalog" class="nav-intern" hidden>Strafkatalog</a>
     </nav>
   </div>
 </header>
@@ -441,9 +492,34 @@
 
     <div id="me-box"></div>
 
-    <h3>Kader <span id="squad-count"></span></h3>
-    <div class="squad" id="squad"></div>
+    <div id="kader-box" hidden>
+      <h3>Kader <span id="squad-count"></span></h3>
+      <div class="squad" id="squad"></div>
+    </div>
   </section>
+
+  <!-- ============ Über den Verein ============ -->
+  <section id="verein">
+    <h2>Über den Verein</h2>
+    <p class="sub">Wer wir sind und wie das hier läuft.</p>
+
+    <div class="about">
+      <p>Wir kicken, weil es Spaß macht — Hobbyliga, kein Leistungsdruck, keine starren
+         Trainingszeiten. Wer Lust hat, meldet sich an, trägt Termine ein und stimmt mit ab.</p>
+      <p>Das Training steht nicht im Voraus fest, sondern entsteht hier: Kommen an einem Tag
+         genug Zusagen zusammen, wird gekickt. Und wer sich danebenbenimmt, zahlt in Gustl
+         in die Mannschaftskasse.</p>
+
+      <dl class="facts">
+        <dt>Liga</dt>        <dd>Hobbyliga</dd>
+        <dt>Vereinsfarben</dt><dd>Grün und Weiß</dd>
+        <dt>Training</dt>    <dd>nach Abstimmung — ab genug Zusagen steht der Termin</dd>
+        <dt>Strafkasse</dt>  <dd>gerechnet in Gustl, 1 Gustl = 1,48 €</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div id="intern" hidden>
 
   <!-- ============ Kalender ============ -->
   <section id="kalender">
@@ -474,8 +550,8 @@
           <input type="time" id="ev-time" value="19:00" required>
         </div>
         <div class="field" style="flex-basis:12rem">
-          <label for="ev-place">Ort</label>
-          <input type="text" id="ev-place" value="Sportplatz" maxlength="60" required>
+          <label for="ev-place">Ort <span class="note">(optional)</span></label>
+          <input type="text" id="ev-place" maxlength="60" placeholder="z. B. Sportplatz">
         </div>
         <button type="submit">Eintragen</button>
       </form>
@@ -500,7 +576,8 @@
   <!-- ============ Strafkatalog ============ -->
   <section id="strafkatalog">
     <h2>Strafkatalog</h2>
-    <p class="sub">Wer sich nicht dran hält, zahlt in die Mannschaftskasse. Ohne Diskussion.</p>
+    <p class="sub">Wer sich nicht dran hält, zahlt in die Mannschaftskasse. Ohne Diskussion.
+       Gerechnet wird in Gustl: <b>1 Gustl = 1,48 €</b>.</p>
 
     <table>
       <thead>
@@ -519,12 +596,14 @@
         <input type="text" id="pen-text" maxlength="80" placeholder="z. B. Trikot vergessen" required>
       </div>
       <div class="field" style="flex-basis:7rem">
-        <label for="pen-amount">Betrag in €</label>
+        <label for="pen-amount">Betrag in Gustl</label>
         <input type="number" id="pen-amount" min="0" max="999" step="0.5" value="2" required>
       </div>
       <button type="submit">Hinzufügen</button>
     </form>
   </section>
+
+  </div><!-- /#intern -->
 
 </main>
 
@@ -540,8 +619,10 @@
 
   var STORE = 'svg-hobbyliga-v1';
 
+  var GUSTL_EUR = 1.48;          // ein Gustl in Euro
+
   var DEFAULT_PENALTIES = [
-    ['Zu spät zum Training (je angefangene 5 Min.)', 1],
+    ['Zu spät zum Training (je angefangene 5 Min., höchstens 5 Gustl)', 1],
     ['Unentschuldigt gefehlt', 5],
     ['Zu spät zum Spiel', 10],
     ['Handy klingelt in der Kabine', 2],
@@ -592,8 +673,16 @@
     return DOW[(d.getDay() + 6) % 7] + ', ' + pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.';
   }
 
-  function money(n) {
-    return n.toFixed(2).replace('.', ',') + ' €';
+  function num(n) {
+    return (Math.round(n * 100) / 100).toString().replace('.', ',');
+  }
+
+  function gustl(n) {
+    return num(n) + ' Gustl';
+  }
+
+  function euro(n) {
+    return (n * GUSTL_EUR).toFixed(2).replace('.', ',') + ' €';
   }
 
   /* ---------- Speicher ---------- */
@@ -687,6 +776,18 @@
   var meBox     = document.getElementById('me-box');
   var squadEl   = document.getElementById('squad');
   var squadNum  = document.getElementById('squad-count');
+  var kaderBox  = document.getElementById('kader-box');
+  var internEl  = document.getElementById('intern');
+  var navIntern = document.querySelectorAll('.nav-intern');
+
+  // Kader, Termine und Strafkatalog zeigen wir erst nach der Anmeldung.
+  // Das ist ein Sichtschutz, kein Zugangsschutz — die Seite liegt beim Betrachter.
+  function setVisibility() {
+    var open = !!me();
+    internEl.hidden = !open;
+    kaderBox.hidden = !open;
+    for (var i = 0; i < navIntern.length; i++) navIntern[i].hidden = !open;
+  }
 
   function renderMe() {
     var m = me();
@@ -704,6 +805,8 @@
       });
     } else {
       meBox.innerHTML =
+        '<p class="note" style="margin-bottom:.75rem">Kader, Trainingstermine, Abstimmung und ' +
+          'Strafkatalog sind nur für angemeldete Spieler sichtbar.</p>' +
         '<form class="form" id="login-form">' +
           '<div class="field" style="flex-basis:12rem">' +
             '<label for="login-name">Dein Name</label>' +
@@ -858,7 +961,7 @@
     var date  = dateInput.value;
     var time  = document.getElementById('ev-time').value;
     var place = document.getElementById('ev-place').value.trim();
-    if (!date || !time || !place) return;
+    if (!date || !time) return;
 
     var ev = { id: uid(), date: date, time: time, place: place, by: state.meId, votes: {} };
     ev.votes[state.meId] = 'ja';          // wer einträgt, ist dabei
@@ -929,7 +1032,8 @@
       return '<article class="event' + (on ? ' go' : '') + '">' +
         '<div class="event-head">' +
           '<span class="event-date">' + fmtDate(ev.date) + '</span>' +
-          '<span class="event-meta">' + esc(ev.time) + ' Uhr · ' + esc(ev.place) + '</span>' +
+          '<span class="event-meta">' + esc(ev.time) + ' Uhr' +
+            (ev.place ? ' · ' + esc(ev.place) : '') + '</span>' +
           '<span class="badge' + (on ? ' go' : '') + '" style="margin-left:auto">' +
             (on ? 'Training findet statt' : 'Noch ' + (state.threshold - ja) + ' Zusage' +
                   (state.threshold - ja === 1 ? '' : 'n')) +
@@ -992,7 +1096,8 @@
     penaltiesEl.innerHTML = state.penalties.map(function (p) {
       return '<tr>' +
         '<td>' + esc(p.text) + '</td>' +
-        '<td class="amount">' + money(+p.amount) + '</td>' +
+        '<td class="amount"><b>' + gustl(+p.amount) + '</b>' +
+          '<span class="eur">' + euro(+p.amount) + '</span></td>' +
         '<td class="act"><button class="x" type="button" data-del-pen="' + p.id + '" ' +
           'aria-label="Strafe entfernen">×</button></td>' +
       '</tr>';
@@ -1027,6 +1132,7 @@
 
   function renderAll() {
     renderMe();
+    setVisibility();
     renderSquad();
     renderCalendar();
     renderEvents();
