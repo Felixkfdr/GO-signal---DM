@@ -22,13 +22,18 @@
     --amber:   #B07206;
     --amber-bg:#FDF4E3;
     --red:     #B3261E;
+    --on-pitch:#FFFFFF;
+    --nav:     rgba(255, 255, 255, .14);
+    --nav-hov: rgba(255, 255, 255, .26);
     --shadow:  0 1px 2px rgba(16, 32, 24, .06), 0 8px 24px -16px rgba(16, 32, 24, .35);
 
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
+  /* Dunkel: folgt dem System, laesst sich per <html data-theme="dark|light"> erzwingen.
+     Beide Bloecke halten denselben Satz Werte. */
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --pitch:   #45C98A;
       --pitch-2: #2FA76E;
       --bg:      #0D1411;
@@ -40,8 +45,29 @@
       --amber:   #E0A93C;
       --amber-bg:#2A2214;
       --red:     #E4796F;
+      --on-pitch:#06120C;
+      --nav:     rgba(0, 0, 0, .18);
+      --nav-hov: rgba(0, 0, 0, .30);
       --shadow:  0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
     }
+  }
+
+  :root[data-theme="dark"] {
+    --pitch:   #45C98A;
+    --pitch-2: #2FA76E;
+    --bg:    #0D1411;
+    --paper:   #141C18;
+    --ink:     #E7EFE9;
+    --muted:   #94A29A;
+    --line:    #243029;
+    --chip:    #1B2620;
+    --amber:   #E0A93C;
+    --amber-bg:#2A2214;
+    --red:     #E4796F;
+    --on-pitch:#06120C;
+    --nav:     rgba(0, 0, 0, .18);
+    --nav-hov: rgba(0, 0, 0, .30);
+    --shadow:  0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
   }
 
   body {
@@ -56,12 +82,10 @@
   /* ---------- Kopf ---------- */
   .top {
     background: var(--pitch);
-    color: #fff;
+    color: var(--on-pitch);
     background-image: repeating-linear-gradient(
       90deg, rgba(255,255,255,.05) 0 40px, transparent 40px 80px);
   }
-  @media (prefers-color-scheme: dark) { .top { color: #06120C; } }
-
   .top-inner {
     max-width: 62rem;
     margin: 0 auto;
@@ -99,11 +123,9 @@
     font-weight: 600;
     padding: .38rem .7rem;
     border-radius: 999px;
-    background: rgba(255,255,255,.14);
+    background: var(--nav);
   }
-  @media (prefers-color-scheme: dark) { nav a { background: rgba(0,0,0,.18); } }
-  nav a:hover { background: rgba(255,255,255,.26); }
-  @media (prefers-color-scheme: dark) { nav a:hover { background: rgba(0,0,0,.3); } }
+  nav a:hover { background: var(--nav-hov); }
 
   /* ---------- Layout ---------- */
   main {
@@ -167,7 +189,7 @@
     font: inherit;
     font-size: .92rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--on-pitch);
     background: var(--pitch);
     border: 1px solid transparent;
     border-radius: 9px;
@@ -175,7 +197,6 @@
     cursor: pointer;
     white-space: nowrap;
   }
-  @media (prefers-color-scheme: dark) { button { color: #06120C; } }
   button:hover { background: var(--pitch-2); }
 
   button.ghost {
@@ -297,8 +318,7 @@
     place-items: center;
   }
   .day.has .dot { background: var(--amber-bg); color: var(--amber); }
-  .day.go .dot  { background: var(--pitch); color: #fff; }
-  @media (prefers-color-scheme: dark) { .day.go .dot { color: #06120C; } }
+  .day.go .dot  { background: var(--pitch); color: var(--on-pitch); }
 
   .cal-form { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 
@@ -330,8 +350,7 @@
     color: var(--amber);
     white-space: nowrap;
   }
-  .badge.go { background: var(--pitch); color: #fff; }
-  @media (prefers-color-scheme: dark) { .badge.go { color: #06120C; } }
+  .badge.go { background: var(--pitch); color: var(--on-pitch); }
 
   .bar {
     height: 6px;
@@ -345,12 +364,9 @@
 
   .votes { display: flex; flex-wrap: wrap; gap: .35rem; }
   .votes button { font-size: .85rem; padding: .35rem .75rem; }
-  .vote-on[data-v="ja"]        { background: var(--pitch);  border-color: transparent; color: #fff; }
-  .vote-on[data-v="vielleicht"]{ background: var(--amber);  border-color: transparent; color: #fff; }
-  .vote-on[data-v="nein"]      { background: var(--muted);  border-color: transparent; color: #fff; }
-  @media (prefers-color-scheme: dark) {
-    .vote-on[data-v="ja"], .vote-on[data-v="vielleicht"], .vote-on[data-v="nein"] { color: #06120C; }
-  }
+  .vote-on[data-v="ja"]        { background: var(--pitch); border-color: transparent; color: var(--on-pitch); }
+  .vote-on[data-v="vielleicht"]{ background: var(--amber); border-color: transparent; color: var(--on-pitch); }
+  .vote-on[data-v="nein"]      { background: var(--muted); border-color: transparent; color: var(--on-pitch); }
   .votes button.vote-on:hover { filter: brightness(1.08); }
   .tally { font-size: .85rem; color: var(--muted); margin-top: .5rem; }
   .tally b { color: var(--ink); font-weight: 600; }
