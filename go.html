@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0A0B0D">
+<title>GO</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; padding: 0; }
+
+  :root {
+    color-scheme: dark;
+
+    --ground:    #0A0B0D;
+    --ink:       #EEF1F3;
+    --dim:       #565D66;
+    --lamp-off:  #1B1F25;
+    --amber:     #F5A524;
+    --green:     #2FE07A;
+
+    --glow:      transparent;
+    --glow-size: 0;
+
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .page {
+    min-height: 100dvh;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0;
+    overflow: hidden;
+    position: relative;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .page:focus { outline: none; }
+
+  /* Umgebungslicht hinter der Anzeige */
+  .glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 48%,
+                  var(--glow) 0%,
+                  transparent calc(28% + var(--glow-size) * 26%));
+    opacity: var(--glow-size);
+    transition: opacity 420ms ease, background 420ms ease;
+  }
+
+  /* Lampenleiste: eine Lampe pro Countdown-Schritt */
+  .rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 0.9rem;
+    padding: 2.25rem 1.5rem 0;
+  }
+  .lamp {
+    width: 2.75rem;
+    height: 0.3rem;
+    border-radius: 999px;
+    background: var(--lamp-off);
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+  .lamp.on {
+    background: var(--amber);
+    box-shadow: 0 0 18px -2px var(--amber);
+  }
+  .lamp.clear {
+    background: var(--green);
+    box-shadow: 0 0 22px -2px var(--green);
+  }
+
+  .stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .display {
+    font-weight: 800;
+    line-height: 0.85;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  .display.idle {
+    font-family: var(--mono);
+    font-size: clamp(0.95rem, 3.4vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: 0.42em;
+    text-indent: 0.42em;            /* letzten Buchstabenabstand ausgleichen */
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .display.count {
+    font-size: clamp(9rem, 44vw, 26rem);
+    letter-spacing: -0.06em;
+    color: var(--ink);
+    animation: tick 760ms cubic-bezier(.16, 1, .3, 1);
+  }
+
+  .display.go {
+    font-size: clamp(7rem, 36vw, 21rem);
+    letter-spacing: -0.045em;
+    color: var(--green);
+    animation: tick 340ms cubic-bezier(.2, 1.5, .4, 1);
+  }
+
+  @keyframes tick {
+    0%   { transform: scale(0.72); opacity: 0; }
+    40%  { transform: scale(1.03); opacity: 1; }
+    100% { transform: scale(1);    opacity: 1; }
+  }
+
+  .hint {
+    position: relative;
+    padding: 0 1.5rem 2.25rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    opacity: 0.72;
+    transition: opacity 300ms ease;
+  }
+  .hint .touch-only { display: none; }
+
+  /* Touch-Geräte haben keine ⌘-Taste */
+  @media (hover: none) and (pointer: coarse) {
+    .hint .key-only  { display: none; }
+    .hint .touch-only { display: inline; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .display.count,
+    .display.go { animation: none; }
+    .glow { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page" id="page" tabindex="-1">
+  <div class="glow" id="glow"></div>
+
+  <div class="rail" id="rail">
+    <span class="lamp"></span>
+    <span class="lamp"></span>
+    <span class="lamp"></span>
+  </div>
+
+  <main class="stage">
+    <div class="display idle" id="display">Press to start</div>
+  </main>
+
+  <footer class="hint">
+    <span class="key-only">Beide &#8984;-Tasten gleichzeitig dr&uuml;cken</span>
+    <span class="touch-only">Mit zwei Fingern tippen</span>
+  </footer>
+</div>
+
+<script>
+  const page    = document.getElementById('page');
+  const display = document.getElementById('display');
+  const glow    = document.getElementById('glow');
+  const lamps   = Array.from(document.querySelectorAll('.lamp'));
+
+  const COUNT_FROM = 3;    // Countdown startet bei 3
+  const GO_MS      = 2000; // "GO" bleibt 2 Sekunden stehen
+  const TAP_WINDOW = 300;  // max. Abstand zwischen den beiden Tasten (ms)
+
+  // Tastenpaare, die den Countdown auslösen
+  const PAIRS = [
+    ['MetaLeft', 'MetaRight'],
+    ['ShiftLeft', 'ShiftRight'],
+    ['ControlLeft', 'ControlRight'],
+    ['AltLeft', 'AltRight'],
+  ];
+
+  const pressedAt = new Map(); // Taste -> Zeitpunkt des letzten Drückens
+  let state = 'idle';          // idle | counting | go
+  let timers = [];
+
+  function clearTimers() {
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function setGlow(color, size) {
+    document.documentElement.style.setProperty('--glow', color);
+    document.documentElement.style.setProperty('--glow-size', size);
+  }
+
+  function setLamps(litCount, cleared) {
+    lamps.forEach((lamp, i) => {
+      lamp.classList.toggle('on', !cleared && i < litCount);
+      lamp.classList.toggle('clear', cleared);
+    });
+  }
+
+  function show(text, cls) {
+    display.className = 'display ' + cls;
+    void display.offsetWidth; // Animation neu starten
+    display.textContent = text;
+  }
+
+  function setIdle() {
+    clearTimers();
+    state = 'idle';
+    setLamps(0, false);
+    setGlow('transparent', 0);
+    show('Press to start', 'idle');
+  }
+
+  function step(value) {
+    show(String(value), 'count');
+    setLamps(COUNT_FROM - value + 1, false);
+    setGlow('rgba(245, 165, 36, 0.14)', 0.85);
+  }
+
+  function fireGo() {
+    state = 'go';
+    show('GO', 'go');
+    setLamps(0, true);
+    setGlow('rgba(47, 224, 122, 0.18)', 1);
+    timers.push(setTimeout(setIdle, GO_MS));
+  }
+
+  function startCountdown() {
+    clearTimers();
+    pressedAt.clear();
+    state = 'counting';
+
+    step(COUNT_FROM);
+    for (let i = 1; i < COUNT_FROM; i++) {
+      timers.push(setTimeout(() => step(COUNT_FROM - i), i * 1000));
+    }
+    timers.push(setTimeout(fireGo, COUNT_FROM * 1000));
+  }
+
+  // Wurde die Partnertaste des gerade gedrückten Codes eben mitgedrückt?
+  function pairTapped(code, now) {
+    return PAIRS.some(([a, b]) => {
+      const partner = code === a ? b : code === b ? a : null;
+      if (partner === null) return false;
+      const t = pressedAt.get(partner);
+      return t !== undefined && now - t <= TAP_WINDOW;
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+    const now = performance.now();
+    if (state === 'idle' && pairTapped(e.code, now)) {
+      startCountdown();
+      return;
+    }
+    pressedAt.set(e.code, now);
+  });
+
+  // Touch-Variante: mit zwei Fingern tippen
+  document.addEventListener('touchstart', (e) => {
+    if (state === 'idle' && e.touches.length === 2) startCountdown();
+  }, { passive: true });
+
+  // In einem eingebetteten Rahmen braucht die Seite erst den Tastaturfokus
+  page.focus();
+  document.addEventListener('pointerdown', () => page.focus());
+  window.addEventListener('blur', () => pressedAt.clear());
+</script>
+
+</body>
+</html>
