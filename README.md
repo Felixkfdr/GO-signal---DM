@@ -3,11 +3,12 @@
 Die Vereinsseite der Hobbyliga-Truppe: Trainingstermine eintragen, abstimmen, wer kann — und
 den Strafkatalog vor Augen haben.
 
-Eine einzelne HTML-Datei, kein Build, keine Abhängigkeiten.
+Zwei Dateien, kein Build, keine Abhängigkeiten: `index.html` und das Wappen `wappen.svg`.
 
 ## Benutzen
 
-`index.html` im Browser öffnen — das war's.
+`index.html` im Browser öffnen — das war's. `wappen.svg` muss daneben liegen, sonst fehlt nur das
+Wappen; die Seite funktioniert trotzdem.
 
 1. **Anmelden** — einmal mit Namen (Rückennummer optional) eintragen. Kader, Kalender, Abstimmung und
    Strafkatalog sind erst nach der Anmeldung zu sehen; ohne Anmeldung bleiben nur die Anmeldung selbst
@@ -50,12 +51,9 @@ Oben im `<script>`-Block:
 Die Vereinsfarben Grün und Weiß stecken in den CSS-Variablen `--pitch`, `--pitch-2` und `--on-pitch`
 ganz oben im `<style>`-Block; ein Dark-Mode-Satz derselben Variablen steht direkt darunter.
 
-**Wappen:** im Kopf der Seite steht ein Platzhalter als Inline-SVG (`<svg class="wappen">`). Das echte
-Wappen kommt an dieselbe Stelle — Datei ins Repo legen und das `<svg>` ersetzen durch:
-
-```html
-<img src="wappen.png" alt="Wappen SV Gustlmännchen" class="wappen">
-```
+**Wappen:** `wappen.svg`, aus der Vorlage `FINAL_GUSTLMÄNNERS.pdf` verlustfrei als Vektor übernommen.
+Es trägt die Farben Grün `#3A6242` und Gold `#CAA56D`; das Gold steckt als `--gold` auch in der
+Zierleiste unter dem Kopf. Die Größe regelt `.wappen { width: … }` im `<style>`-Block.
 
 ## Sonst noch hier
 

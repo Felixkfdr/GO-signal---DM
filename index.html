@@ -23,6 +23,7 @@
     --amber-bg:#FDF4E3;
     --red:     #B3261E;
     --on-pitch:#FFFFFF;
+    --gold:    #CAA56D;          /* Zierfarbe aus dem Wappen */
     --nav:     rgba(255, 255, 255, .14);
     --nav-hov: rgba(255, 255, 255, .26);
     --shadow:  0 1px 2px rgba(16, 32, 24, .06), 0 8px 24px -16px rgba(16, 32, 24, .35);
@@ -46,6 +47,7 @@
       --amber-bg:#2A2214;
       --red:     #E4796F;
       --on-pitch:#06120C;
+      --gold:    #7A5A24;
       --nav:     rgba(0, 0, 0, .18);
       --nav-hov: rgba(0, 0, 0, .30);
       --shadow:  0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
@@ -65,6 +67,7 @@
     --amber-bg:#2A2214;
     --red:     #E4796F;
     --on-pitch:#06120C;
+    --gold:    #7A5A24;
     --nav:     rgba(0, 0, 0, .18);
     --nav-hov: rgba(0, 0, 0, .30);
     --shadow:  0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
@@ -85,6 +88,7 @@
     color: var(--on-pitch);
     background-image: repeating-linear-gradient(
       90deg, rgba(255,255,255,.05) 0 40px, transparent 40px 80px);
+    border-bottom: 3px solid var(--gold);
   }
   .top-inner {
     max-width: 62rem;
@@ -93,12 +97,7 @@
   }
   .brand { display: flex; align-items: center; gap: 1rem; }
 
-  /* Platzhalter-Wappen: Grün-Weiß, nimmt die Themafarben auf */
-  .wappen { width: 3.6rem; height: auto; flex: none; }
-  .wappen .feld  { fill: var(--on-pitch); stroke: var(--pitch); }
-  .wappen .gruen { fill: var(--pitch); }
-  .wappen .weiss { fill: var(--on-pitch); }
-  .wappen .linie { stroke: var(--pitch); fill: none; }
+  .wappen { width: 5.6rem; height: auto; flex: none; }
 
   .crest {
     font-size: .72rem;
@@ -434,7 +433,7 @@
     .field { flex-basis: 100%; }
     .form button { width: 100%; }
     .day { height: 2.7rem; font-size: .8rem; }
-    .wappen { width: 2.9rem; }
+    .wappen { width: 4.1rem; }
   }
 </style>
 </head>
@@ -443,23 +442,9 @@
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <!-- Platzhalter-Wappen. Gegen das echte tauschen: dieses <svg> durch
-           <img src="wappen.png" alt="Wappen SV Gustlmännchen" class="wappen"> ersetzen. -->
-      <svg class="wappen" viewBox="0 0 64 74" role="img" aria-label="Vereinswappen (Platzhalter)">
-        <path class="feld" d="M32 2.5 59 9.5V38c0 16.5-12.5 27.5-27 33.5C17.5 65.5 5 54.5 5 38V9.5Z"
-              stroke-width="3" stroke-linejoin="round"/>
-        <path class="gruen" d="M32 6 55.5 12v13.5h-47V12Z"/>
-        <text class="weiss" x="32" y="22.5" text-anchor="middle"
-              font-size="12.5" font-weight="700" font-family="var(--sans)" letter-spacing=".5">SVG</text>
-        <circle class="feld" cx="32" cy="46" r="13" stroke-width="2.5"/>
-        <path class="gruen" d="m32 39 5.7 4.2-2.2 6.7h-7L26.3 43.2Z"/>
-        <g class="linie" stroke-width="2.2" stroke-linecap="round">
-          <path d="M32 39v-5.8"/><path d="m37.7 43.2 5.4-1.9"/><path d="m35.5 49.9 3.4 4.7"/>
-          <path d="m28.5 49.9-3.4 4.7"/><path d="m26.3 43.2-5.4-1.9"/>
-        </g>
-      </svg>
+      <img src="wappen.svg" alt="Wappen des SV Gustlmännchen" class="wappen">
       <div>
-        <div class="crest">Hobbyliga · Grün-Weiß</div>
+        <div class="crest">Hobbyliga · gegr. 2026</div>
         <h1>SV Gustlmännchen</h1>
         <p class="claim">Trainingstermine eintragen, abstimmen, kicken — und Strafen zahlen.</p>
       </div>
@@ -502,6 +487,7 @@
          in die Mannschaftskasse.</p>
 
       <dl class="facts">
+        <dt>Gegründet</dt>   <dd>2026</dd>
         <dt>Liga</dt>        <dd>Hobbyliga</dd>
         <dt>Vereinsfarben</dt><dd>Grün und Weiß</dd>
         <dt>Training</dt>    <dd>nach Abstimmung — ab genug Zusagen steht der Termin</dd>
